@@ -1,4 +1,4 @@
-package uk.ac.aston.jonesja1.ersclient;
+package uk.ac.aston.jonesja1.ersclient.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +11,9 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import uk.ac.aston.jonesja1.ersclient.MainActivity;
+import uk.ac.aston.jonesja1.ersclient.R;
 
 public class MessagingService extends FirebaseMessagingService {
 

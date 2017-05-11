@@ -15,8 +15,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
-
 
         Button enrolButton = (Button) findViewById(R.id.button_enrol);
         enrolButton.setOnClickListener(new View.OnClickListener() {

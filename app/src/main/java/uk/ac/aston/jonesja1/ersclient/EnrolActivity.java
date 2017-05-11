@@ -13,6 +13,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
+import uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer;
+
 
 public class EnrolActivity extends AppCompatActivity {
 
@@ -80,9 +82,9 @@ public class EnrolActivity extends AppCompatActivity {
 
             @Override
             public void onFailure() {
-
+                enrolButton.setEnabled(true);
             }
-        }).execute(params);
+        }, this).execute(params);
     }
 
 

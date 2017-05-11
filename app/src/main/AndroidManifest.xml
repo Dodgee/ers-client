@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".EnrolActivity" android:theme="@style/AppTheme" />
-        <service android:name=".MessagingService" />
+        <service android:name=".service.MessagingService" />
     </application>
 
 </manifest>

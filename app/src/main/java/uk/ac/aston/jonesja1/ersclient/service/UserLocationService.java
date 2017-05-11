@@ -1,4 +1,4 @@
-package uk.ac.aston.jonesja1.ersclient;
+package uk.ac.aston.jonesja1.ersclient.service;
 
 import android.app.IntentService;
 import android.app.Service;
