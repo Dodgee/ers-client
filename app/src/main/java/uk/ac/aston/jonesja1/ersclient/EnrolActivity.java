@@ -9,6 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.HashMap;
+
 
 public class EnrolActivity extends AppCompatActivity {
 
@@ -45,8 +49,9 @@ public class EnrolActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         String employeeNumber = employeeNumberField.getText().toString();
 
-        if (validate(name, email, employeeNumber)) {
-            onSignupFailed();
+        if (!validateInputs(name, email, employeeNumber)) {
+            Toast.makeText(getBaseContext(), "Enrollment Fields are Invalid.", Toast.LENGTH_LONG).show();
+            enrolButton.setEnabled(true);
             return;
         }
 
@@ -60,31 +65,34 @@ public class EnrolActivity extends AppCompatActivity {
         progressDialog.setMessage("Attempting to Enrol...");
         progressDialog.show();
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        HashMap<String, String> params = new HashMap();
+        params.put("name", name);
+        params.put("email", email);
+        params.put("employeeId", employeeNumber);
+        params.put("firebaseToken", FirebaseInstanceId.getInstance().getToken());
+
+        new EnrolWithServer(new EnrolWithServer.EnrolWithServerCallback() {
+            @Override
+            public void onSuccess() {
+                onEnrolSuccess();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        }).execute(params);
     }
 
 
-    public void onSignupSuccess() {
+    public void onEnrolSuccess() {
         enrolButton.setEnabled(true);
         setResult(RESULT_OK, null);
         finish();
     }
 
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Failed to Enrol. Please try again.", Toast.LENGTH_LONG).show();
-        enrolButton.setEnabled(true);
-    }
-
-    public boolean validate(String name, String email, String employeeNumber) {
+    public boolean validateInputs(String name, String email, String employeeNumber) {
         boolean valid = true;
 
         if (name == null || name.isEmpty()) {
