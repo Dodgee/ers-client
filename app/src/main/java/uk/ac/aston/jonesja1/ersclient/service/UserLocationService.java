@@ -1,7 +1,6 @@
 package uk.ac.aston.jonesja1.ersclient.service;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,15 +15,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import uk.ac.aston.jonesja1.ersclient.service.async.LocationUpdate;
+
 public class UserLocationService extends IntentService implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient googleApiClient;
 
-    private LocationUpdateService locationUpdateService;
-
-    public UserLocationService(LocationUpdateService locationUpdateService) {
+    public UserLocationService() {
         super("UserLocationService");
-        this.locationUpdateService = locationUpdateService;
     }
 
     @Nullable
@@ -45,12 +43,12 @@ public class UserLocationService extends IntentService implements LocationListen
 
     @Override
     public void onLocationChanged(Location location) {
-        locationUpdateService.onLocationUpdate(location);
+        new LocationUpdate(location, getBaseContext()).execute();
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        startLocationUpdates();
     }
 
     @Override
@@ -64,6 +62,7 @@ public class UserLocationService extends IntentService implements LocationListen
     }
 
     public void startLocationUpdates() {
+        Log.i("UserLocationService", "starting location requests");
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
@@ -80,7 +79,4 @@ public class UserLocationService extends IntentService implements LocationListen
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
-    private interface LocationUpdateService {
-        void onLocationUpdate(Location location);
-    }
 }

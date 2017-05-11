@@ -28,6 +28,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         //create notification
         createNotification(message);
+        startService(new Intent(this, UserLocationService.class));
     }
 
     private void createNotification(String messageBody) {
