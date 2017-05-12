@@ -12,7 +12,7 @@ public interface RegisterAPI {
     Call<String> enrol(@Body RegisterRequest registerRequest);
 
     @POST("register/reauthenticate/{id}")
-    Call<String> reauthenticate(@Path("id") String id);
+    Call<String> reauthenticate(@Path("id") String id, @Body String connectionDetails);
 
     class RegisterRequest {
 
@@ -56,4 +56,5 @@ public interface RegisterAPI {
             this.connectionDetails = connectionDetails;
         }
     }
+
 }

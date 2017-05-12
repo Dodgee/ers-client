@@ -18,7 +18,9 @@ import uk.ac.aston.jonesja1.ersclient.service.api.RegisterAPI;
 
 public class EnrolWithServer extends AsyncTask<HashMap<String, String>, String, String> {
 
-    public static final String ENROLLED_DEVICE_ID = "ENROLLED_DEVICE_ID";
+    public static final String ENROLLED_DEVICE_ID = "ERS_DEVICE_ID";
+
+    public static final String ENROLLED_FIREBASE_TOKEN = "ERS_FIREBASE_TOKEN";
 
     private EnrolWithServerCallback callback;
 
@@ -54,15 +56,16 @@ public class EnrolWithServer extends AsyncTask<HashMap<String, String>, String, 
         if (response == null) {
             return "400";
         }
-        saveID(response, context);
+        saveAuthDetails(response, context, params[0].get("firebaseToken"));
         return "" + response.code();
     }
 
-    private void saveID(Response<String> response, Context context) {
+    private void saveAuthDetails(Response<String> response, Context context, String firebaseToken) {
         String id = response.body();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(ENROLLED_DEVICE_ID, id);
+        editor.putString(ENROLLED_FIREBASE_TOKEN, firebaseToken);
         editor.commit();
     }
 
