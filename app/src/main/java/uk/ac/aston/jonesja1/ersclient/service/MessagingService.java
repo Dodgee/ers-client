@@ -36,7 +36,7 @@ public class MessagingService extends FirebaseMessagingService {
         builder.append(site);
         if (isEmergencyState(status)) {
             builder.append(" is now in an EMERGENCY status.");
-            builder.append(" Please avoid travelling to the area.");
+            builder.append(" Please avoid travelling to the area and await further instruction.");
         } else {
             builder.append(" has returned to normal conditions.");
             builder.append(" Please continue business as usual.");
@@ -50,8 +50,9 @@ public class MessagingService extends FirebaseMessagingService {
 
     private void createNotification(String message) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent resultIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("MESSAGE", message);
+        PendingIntent resultIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri notificationSoundURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(this)
