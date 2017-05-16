@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import uk.ac.aston.jonesja1.ersclient.service.FirebaseTokenService;
 
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FirebaseMessaging.getInstance().subscribeToTopic("ERSUpdate");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String id = sharedPreferences.getString(ENROLLED_DEVICE_ID, null);
 

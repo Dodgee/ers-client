@@ -1,6 +1,6 @@
 package uk.ac.aston.jonesja1.ersclient.service;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,12 +17,12 @@ import com.google.android.gms.location.LocationServices;
 
 import uk.ac.aston.jonesja1.ersclient.service.async.LocationUpdate;
 
-public class UserLocationService extends IntentService implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class UserLocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient googleApiClient;
 
     public UserLocationService() {
-        super("UserLocationService");
+
     }
 
     @Nullable
@@ -32,13 +32,20 @@ public class UserLocationService extends IntentService implements LocationListen
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
         googleApiClient.connect();
+        return Service.START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
     }
 
     @Override
@@ -76,7 +83,9 @@ public class UserLocationService extends IntentService implements LocationListen
     }
 
     public void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        }
     }
 
 }
