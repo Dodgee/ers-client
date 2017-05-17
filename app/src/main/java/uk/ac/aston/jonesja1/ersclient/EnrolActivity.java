@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 
@@ -76,6 +77,7 @@ public class EnrolActivity extends AppCompatActivity {
         new EnrolWithServer(new EnrolWithServer.EnrolWithServerCallback() {
             @Override
             public void onSuccess() {
+                FirebaseMessaging.getInstance().subscribeToTopic("ERSUpdate");
                 onEnrolSuccess();
                 progressDialog.dismiss();
             }

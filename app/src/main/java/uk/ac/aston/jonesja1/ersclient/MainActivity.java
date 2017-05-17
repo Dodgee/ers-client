@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebaseMessaging.getInstance().subscribeToTopic("ERSUpdate");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String id = sharedPreferences.getString(ENROLLED_DEVICE_ID, null);
 
