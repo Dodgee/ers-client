@@ -1,7 +1,6 @@
 package uk.ac.aston.jonesja1.ersclient.service.async;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import uk.ac.aston.jonesja1.ersclient.service.UserLocationService;
 import uk.ac.aston.jonesja1.ersclient.service.api.UpdateLocationAPI;
 
 import static uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer.ENROLLED_DEVICE_ID;
@@ -71,7 +69,7 @@ public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, S
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         //if the server is not accepting location updates call the callback function
-        if ("405".equals(s)) {
+        if ("404".equals(s) || "405".equals(s)) {
             callback.onRejected();
         }
     }
