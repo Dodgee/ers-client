@@ -1,6 +1,7 @@
 package uk.ac.aston.jonesja1.ersclient.service.async;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -13,8 +14,10 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.HashMap;
 
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import uk.ac.aston.jonesja1.ersclient.service.UserLocationService;
 import uk.ac.aston.jonesja1.ersclient.service.api.UpdateLocationAPI;
 
 import static uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer.ENROLLED_DEVICE_ID;
@@ -25,9 +28,12 @@ public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, S
 
     private Context context;
 
-    public LocationUpdate(Location location, Context context) {
+    private LocationUpdateCallback callback;
+
+    public LocationUpdate(Location location, Context context, LocationUpdateCallback callback) {
         this.location = location;
         this.context = context;
+        this.callback = callback;
     }
 
     @Override
@@ -46,20 +52,31 @@ public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, S
         request.setLongitude(location.getLongitude());
         request.setLatitude(location.getLatitude());
         UpdateLocationAPI locationAPI = retrofit.create(UpdateLocationAPI.class);
-
+        Response<String> response = null;
         try {
-            locationAPI.update(request).execute();
+            response = locationAPI.update(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*if (response == null) {
+        if (response == null) {
             Log.w("LocationUpdate", "no response when sending updated location");
             return "400";
         } else {
             Log.i("LocationUpdate", "location updated");
         }
-        return "" + response.code();*/
-        return "";
+        return "" + response.code();
     }
 
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        //if the server is not accepting location updates call the callback function
+        if ("405".equals(s)) {
+            callback.onRejected();
+        }
+    }
+
+    public interface LocationUpdateCallback {
+        void onRejected();
+    }
 }

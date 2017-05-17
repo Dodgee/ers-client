@@ -50,7 +50,13 @@ public class UserLocationService extends Service implements LocationListener, Go
 
     @Override
     public void onLocationChanged(Location location) {
-        new LocationUpdate(location, getBaseContext()).execute();
+        new LocationUpdate(location, getBaseContext(), new LocationUpdate.LocationUpdateCallback() {
+            //if the server is not accepting updates then stop trying to get current location
+            @Override
+            public void onRejected() {
+                stopLocationUpdates();
+            }
+        }).execute();
     }
 
     @Override

@@ -8,7 +8,7 @@ import retrofit2.http.POST;
 public interface UpdateLocationAPI {
 
     @POST("update/")
-    Call<Void> update(@Body LocationUpdateRequest locationUpdateRequest);
+    Call<String> update(@Body LocationUpdateRequest locationUpdateRequest);
 
     class LocationUpdateRequest {
 
