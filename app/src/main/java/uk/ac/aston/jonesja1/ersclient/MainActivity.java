@@ -13,10 +13,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import uk.ac.aston.jonesja1.ersclient.service.FirebaseTokenService;
 
+import static uk.ac.aston.jonesja1.ersclient.service.MessagingService.FROM_NOTIFICATION;
+import static uk.ac.aston.jonesja1.ersclient.service.MessagingService.NOTIFICATION_MESSAGE;
 import static uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer.ENROLLED_DEVICE_ID;
 import static uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer.ENROLLED_FIREBASE_TOKEN;
 
@@ -48,12 +49,17 @@ public class MainActivity extends AppCompatActivity {
             enrolledID.setVisibility(View.VISIBLE);
             reauthButton.setVisibility(View.INVISIBLE);
         }
+
+        Intent intent = getIntent();
+        if (intent.getExtras().getBoolean(FROM_NOTIFICATION)) {
+            fireAlertWithMessage(intent);
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        updateCurrentStatus(intent);
+        fireAlertWithMessage(intent);
     }
 
     @Override
@@ -87,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
         return currentToken.equals(savedToken);
     }
 
-    private void updateCurrentStatus(Intent intent) {
+    private void fireAlertWithMessage(Intent intent) {
         Bundle extras = intent.getExtras();
-        String message = extras.getString("MESSAGE");
+        String message = extras.getString(NOTIFICATION_MESSAGE);
         new AlertDialog.Builder(this)
                 .setTitle("Capgemini Incident Update")
                 .setMessage(message)

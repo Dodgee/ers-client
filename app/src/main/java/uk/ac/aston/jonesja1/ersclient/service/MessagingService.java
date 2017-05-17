@@ -19,11 +19,14 @@ public class MessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MessagingService";
 
+    public static final String FROM_NOTIFICATION = "FROMNOTIFICATION";
+    public static final String NOTIFICATION_MESSAGE = "MESSAGE";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i(TAG, "From: " + remoteMessage.getFrom());
 
-        String message = remoteMessage.getData().get("MESSAGE");
+        String message = remoteMessage.getData().get(NOTIFICATION_MESSAGE);
         if (message == null || "".equals(message)) {
             String status = remoteMessage.getData().get("STATUS");
             String site = remoteMessage.getData().get("SITE");
@@ -56,7 +59,8 @@ public class MessagingService extends FirebaseMessagingService {
     private void createNotification(String message) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra("MESSAGE", message);
+        intent.putExtra(NOTIFICATION_MESSAGE, message);
+        intent.putExtra(FROM_NOTIFICATION, true);
         PendingIntent resultIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri notificationSoundURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
