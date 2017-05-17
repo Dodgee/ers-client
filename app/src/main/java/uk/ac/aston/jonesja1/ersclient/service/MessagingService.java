@@ -23,12 +23,17 @@ public class MessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i(TAG, "From: " + remoteMessage.getFrom());
 
-        String status = remoteMessage.getData().get("STATUS");
-        String site = remoteMessage.getData().get("SITE");
-        Log.i(TAG, "Message: " + status);
+        String message = remoteMessage.getData().get("MESSAGE");
+        if (message == null || "".equals(message)) {
+            String status = remoteMessage.getData().get("STATUS");
+            String site = remoteMessage.getData().get("SITE");
+            Log.i(TAG, "Message: " + status);
 
-        createNotification(createMessage(status, site));
-        manageLocationService(status);
+            createNotification(createMessage(status, site));
+            manageLocationService(status);
+        } else {
+            createNotification(message);
+        }
     }
 
     private String createMessage(String status, String site) {
