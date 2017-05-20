@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        if (intent.getExtras().getBoolean(FROM_NOTIFICATION)) {
+        if (intent.getExtras() != null && intent.getExtras().getBoolean(FROM_NOTIFICATION)) {
             fireAlertWithMessage(intent);
         }
     }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isTokenValid(String savedToken) {
         String currentToken = FirebaseInstanceId.getInstance().getToken();
-        return currentToken.equals(savedToken);
+        return currentToken != null && currentToken.equals(savedToken);
     }
 
     private void fireAlertWithMessage(Intent intent) {
@@ -106,5 +106,15 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            Intent refresh = new Intent(this, MainActivity.class);
+            startActivity(refresh);
+            this.finish();
+        }
     }
 }

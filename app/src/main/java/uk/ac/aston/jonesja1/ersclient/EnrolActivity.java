@@ -15,6 +15,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
 
 import uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer;
+import uk.ac.aston.jonesja1.ersclient.service.async.ValidateServerURL;
+
+import static uk.ac.aston.jonesja1.ersclient.service.async.ValidateServerURL.ERS_SERVER_URL_KEY;
 
 
 public class EnrolActivity extends AppCompatActivity {
@@ -24,6 +27,7 @@ public class EnrolActivity extends AppCompatActivity {
     private EditText nameField;
     private EditText emailField;
     private EditText employeeNumberField;
+    private EditText serverURLField;
     private Button enrolButton;
 
     @Override
@@ -34,6 +38,7 @@ public class EnrolActivity extends AppCompatActivity {
         nameField = (EditText) findViewById(R.id.input_name);
         emailField = (EditText) findViewById(R.id.input_email);
         employeeNumberField = (EditText) findViewById(R.id.input_employee_number);
+        serverURLField = (EditText) findViewById(R.id.input_server_url);
         enrolButton = (Button) findViewById(R.id.button_enrol);
 
         enrolButton.setOnClickListener(new View.OnClickListener() {
@@ -48,17 +53,11 @@ public class EnrolActivity extends AppCompatActivity {
     public void enrol() {
         Log.d(LOG_MARKER, "Enrol Activated");
 
-        String name = nameField.getText().toString();
-        String email = emailField.getText().toString();
-        String employeeNumber = employeeNumberField.getText().toString();
-
-        if (!validateInputs(name, email, employeeNumber)) {
+        if (!validateInputs()) {
             Toast.makeText(getBaseContext(), "Enrollment Fields are Invalid.", Toast.LENGTH_LONG).show();
             enrolButton.setEnabled(true);
             return;
         }
-
-        enrolButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(
                 EnrolActivity.this,
@@ -67,6 +66,32 @@ public class EnrolActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Attempting to Enrol...");
         progressDialog.show();
+
+        String serverURL = serverURLField.getText().toString();
+        HashMap<String, String> validateParams = new HashMap();
+        validateParams.put(ERS_SERVER_URL_KEY, serverURL);
+        new ValidateServerURL(new ValidateServerURL.ValidateServerURLCallback() {
+            @Override
+            public void onSuccess() {
+                onValidateSuccess();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure() {
+                progressDialog.dismiss();
+                Toast.makeText(EnrolActivity.this, "Unable to verify server url. Please check url and try again.", Toast.LENGTH_LONG).show();
+            }
+        }, this).execute(validateParams);
+
+    }
+
+    public void onValidateSuccess() {
+        String name = nameField.getText().toString();
+        String email = emailField.getText().toString();
+        String employeeNumber = employeeNumberField.getText().toString();
+
+        enrolButton.setEnabled(false);
 
         HashMap<String, String> params = new HashMap();
         params.put("name", name);
@@ -79,7 +104,6 @@ public class EnrolActivity extends AppCompatActivity {
             public void onSuccess() {
                 FirebaseMessaging.getInstance().subscribeToTopic("ERSUpdate");
                 onEnrolSuccess();
-                progressDialog.dismiss();
             }
 
             @Override
@@ -96,8 +120,13 @@ public class EnrolActivity extends AppCompatActivity {
         finish();
     }
 
-    public boolean validateInputs(String name, String email, String employeeNumber) {
+    public boolean validateInputs() {
         boolean valid = true;
+
+        String name = nameField.getText().toString();
+        String email = emailField.getText().toString();
+        String employeeNumber = employeeNumberField.getText().toString();
+        String serverURL = serverURLField.getText().toString();
 
         if (name == null || name.isEmpty()) {
             nameField.setError("Please enter your name.");
@@ -120,6 +149,13 @@ public class EnrolActivity extends AppCompatActivity {
             valid = false;
         } else {
             employeeNumberField.setError(null);
+        }
+
+        if (serverURL == null || serverURL.isEmpty()) {
+            serverURLField.setError("Please enter the ERS Server URL");
+            valid = false;
+        } else {
+            serverURLField.setError(null);
         }
 
         return valid;

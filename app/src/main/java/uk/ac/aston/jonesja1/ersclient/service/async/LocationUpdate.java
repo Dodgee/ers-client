@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import uk.ac.aston.jonesja1.ersclient.service.api.UpdateLocationAPI;
 
 import static uk.ac.aston.jonesja1.ersclient.service.async.EnrolWithServer.ENROLLED_DEVICE_ID;
+import static uk.ac.aston.jonesja1.ersclient.service.async.ValidateServerURL.ERS_SERVER_URL_KEY;
 
 public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, String> {
 
@@ -36,15 +37,18 @@ public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, S
 
     @Override
     protected String doInBackground(HashMap<String, String>... params) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String id = preferences.getString(ENROLLED_DEVICE_ID, null);
+        String url = preferences.getString(ERS_SERVER_URL_KEY, null);
+
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://ers-server-dev.herokuapp.com")
+                .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String id = preferences.getString(ENROLLED_DEVICE_ID, null);
+
         UpdateLocationAPI.LocationUpdateRequest request = new UpdateLocationAPI.LocationUpdateRequest();
         request.setId(id);
         request.setLongitude(location.getLongitude());
@@ -62,6 +66,7 @@ public class LocationUpdate extends AsyncTask<HashMap<String, String>, String, S
         } else {
             Log.i("LocationUpdate", "location updated");
         }
+
         return "" + response.code();
     }
 

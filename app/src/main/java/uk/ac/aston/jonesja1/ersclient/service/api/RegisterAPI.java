@@ -2,11 +2,15 @@ package uk.ac.aston.jonesja1.ersclient.service.api;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface RegisterAPI {
+
+    @GET("system/")
+    Call<String> validateServerURL();
 
     @PUT("register/")
     Call<String> enrol(@Body RegisterRequest registerRequest);

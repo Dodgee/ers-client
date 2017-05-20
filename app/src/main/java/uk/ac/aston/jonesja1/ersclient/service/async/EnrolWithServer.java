@@ -33,11 +33,13 @@ public class EnrolWithServer extends AsyncTask<HashMap<String, String>, String, 
 
     @Override
     protected String doInBackground(HashMap<String, String>... params) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String url = preferences.getString("ERSServerURL", null);
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://ers-server-dev.herokuapp.com")
+                .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
