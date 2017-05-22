@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
             enrolButton.setClickable(false);
             enrolButton.setVisibility(View.INVISIBLE);
             enrolledID.setText("Enrolled ID: " + id);
-            enrolledID.setVisibility(View.VISIBLE);
-            reauthButton.setVisibility(View.INVISIBLE);
         }
 
         Intent intent = getIntent();
@@ -67,24 +65,27 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final String firebaseToken = sharedPreferences.getString(ENROLLED_FIREBASE_TOKEN, null);
+        final String id = sharedPreferences.getString(ENROLLED_DEVICE_ID, null);
+        if (id != null) {
+            final String firebaseToken = sharedPreferences.getString(ENROLLED_FIREBASE_TOKEN, null);
 
-        if (!isTokenValid(firebaseToken)) {
-            Button reauthButton = (Button) findViewById(R.id.button_reauth);
-            reauthButton.setVisibility(View.VISIBLE);
-            reauthButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            FirebaseTokenService.reauthorise(getBaseContext());
-                            return null;
-                        }
-                    };
-                    task.execute();
-                }
-            });
+            if (!isTokenValid(firebaseToken)) {
+                Button reauthButton = (Button) findViewById(R.id.button_reauth);
+                reauthButton.setVisibility(View.VISIBLE);
+                reauthButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                FirebaseTokenService.reauthorise(getBaseContext());
+                                return null;
+                            }
+                        };
+                        task.execute();
+                    }
+                });
+            }
         }
     }
 
