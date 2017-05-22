@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         final String id = sharedPreferences.getString(ENROLLED_DEVICE_ID, null);
 
         Button enrolButton = (Button) findViewById(R.id.button_enrol);
-        Button reauthButton = (Button) findViewById(R.id.button_reauth);
         TextView enrolledID = (TextView) findViewById(R.id.text_enrolled_id);
 
         if (id == null) {
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
             enrolButton.setClickable(false);
             enrolButton.setVisibility(View.INVISIBLE);
             enrolledID.setText("Enrolled ID: " + id);
+            enrolledID.setVisibility(View.VISIBLE);
         }
 
         Intent intent = getIntent();
